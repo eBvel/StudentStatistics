@@ -20,32 +20,30 @@ def request_student_name():
 
 
 def validate_student_name(name):
-    is_valid = True
-    if len(name) == 0: return not is_valid
+    if len(name) < 2: return False
 
-    allowed_characters = ("abcdefghijklmnopqrstuvwxyz"
-                          "ABCDEFGHIJKLMNOPQRSTUVWXYZ")
+    allowed_characters = set("abcdefghijklmnopqrstuvwxyz"
+                             "ABCDEFGHIJKLMNOPQRSTUVWXYZ")
     for letter in name:
         if letter not in allowed_characters:
-            return not is_valid
-
-    return is_valid
+            return False
+    return True
 
 
 def request_student_grades():
-    print("\nВведите оценки студента. Допустимые значения от 1 до 100.\n"
-          "Чтобы завершить ввод оценок, введите цифру '0'.")
+    print("\nВведите оценки студента. Допустимые значения от 0 до 100.\n"
+          "Чтобы завершить ввод оценок, введите значение '-1'.")
     grades = []
     while True:
         try:
             grade = int(input("Введите оценку: "))
-            if grade < 0 or grade > 100:
+            if grade < -1 or grade > 100:
                 print("Ошибка: введено значение за пределами допустимого"
                       " диапозона!")
-            elif grade:
-                grades.append(grade)
-            else:
+            elif grade == -1:
                 return grades
+            else:
+                grades.append(grade)
         except ValueError:
             print("Ошибка: введено некорректное значение!")
 
@@ -55,7 +53,9 @@ def calculate_average(grades):
     try:
         return round(sum(grades) / len(grades), 2)
     except ZeroDivisionError:
-        return None
+        return 0
+    except TypeError:
+        return 0
 
 
 # 5-ое и 7-ое задание
@@ -109,11 +109,7 @@ def display_list_of_student():
 def display_common_average_grade():
     grades_of_students = [student['grades'] for student in students]
     common_average_grade = calculate_common_average(grades_of_students)
-    if common_average_grade is not None:
-        print(f"\nОБЩИЙ СРЕДНИЙ БАЛЛ: {common_average_grade}")
-    else:
-        print("Ошибка: вероятно, список студентов пуст.\nНе удается "
-              "расчитать общий средний балл!")
+    print(f"\nОБЩИЙ СРЕДНИЙ БАЛЛ: {common_average_grade}")
 
 
 # 6-ое задание, часть 2
@@ -137,6 +133,12 @@ def delete_worst_student():
         students.remove(worst_student)
 
 
+def complete_program():
+    global at_work
+    at_work = False
+    print("Программа завершена!")
+
+
 def start_menu():
     print("""
     МЕНЮ:
@@ -148,21 +150,13 @@ def start_menu():
 
 
 def main():
-    at_work = True
+    menu_operations = {1: display_list_of_student,
+                       2: display_common_average_grade, 3: add_student,
+                       4: delete_worst_student, 5: complete_program}
+
     while at_work:
         menu_item = request_menu_item()
-
-        if menu_item == 1:
-            display_list_of_student()
-        elif menu_item == 2:
-            display_common_average_grade()
-        elif menu_item == 3:
-            add_student()
-        elif menu_item == 4:
-            delete_worst_student()
-        elif menu_item == 5:
-            at_work = False
-            print("Программа завершена!")
+        menu_operations[menu_item]()
 
 
 # 1-ое задание.
@@ -172,5 +166,6 @@ students = [
     {"name": "Ron", "grades": [60, 70, 64]},
     {"name": "Draco", "grades": [60, 75, 70]}
 ]
+at_work = True
 start_menu()
 main()
