@@ -1,13 +1,11 @@
-def request_menu_item():
-    while True:
-        try:
-            menu_item = int(input("\nВведите пункт меню: "))
-            if menu_item < 1 or menu_item > 5:
-                print("Ошибка: указанный пункт меню отсутствует!")
-            else:
-                return menu_item
-        except ValueError:
-            print("Ошибка: введено некорректное значение!")
+def request_menu_item(menu_operations):
+    try:
+        menu_item = int(input("\nВведите пункт меню: "))
+        menu_operations[menu_item]()
+    except ValueError:
+        print("Ошибка: введено некорректное значение!")
+    except KeyError:
+        print("Ошибка: указанный пункт меню отсутствует!")
 
 
 def request_student_name():
@@ -153,10 +151,8 @@ def main():
     menu_operations = {1: display_list_of_student,
                        2: display_common_average_grade, 3: add_student,
                        4: delete_worst_student, 5: complete_program}
-
     while at_work:
-        menu_item = request_menu_item()
-        menu_operations[menu_item]()
+        request_menu_item(menu_operations)
 
 
 # 1-ое задание.
